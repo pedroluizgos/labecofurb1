@@ -1,0 +1,68 @@
+---
+title: "Pedro Luiz"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(palmerpenguins)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+#| echo: false
+
+library(tidyverse)
+library(WDI)
+
+pib_codigo <- "NY.GDP.PCAP.CD"
+expectativa_codigo <- "SP.DYN.LE00.IN"
+
+dados_mundiais22 <- WDI(indicator = c(pib_codigo, expectativa_codigo), start = 2022, end = 2022)
+
+dados <- WDI(indicator = c(pib_codigo, expectativa_codigo), start = 2000, end = 2023)
+
+```
+
+## Gráfico de corte transversal
+
+O gráfico de dispersão apresenta a relação entre o PIB per capita (em dólares americanos) e a expectativa de vida ao nascer (em anos) para diferentes países. O eixo horizontal representa o PIB per capita, enquanto o eixo vertical mostra a expectativa de vida. Cada ponto colorido corresponde a um país. Observa-se uma relação positiva entre as variáveis: países com maior PIB per capita tendem a ter maior expectativa de vida, embora o efeito se reduza após certo nível de renda. Isso sugere que melhorias iniciais na renda impactam significativamente a longevidade, mas esse impacto diminui em países mais ricos.
+
+```{r}
+#| label: graf1
+#| warning: false
+#| echo: false
+
+ggplot(dados_mundiais22, aes(x = NY.GDP.PCAP.CD, y = SP.DYN.LE00.IN, color = country)) +
+  geom_point(alpha = 0.6) + # Pontos de dispersão
+  labs(title = "Corte Transversal: PIB per capita vs Expectativa de vida ao nascer",
+       x = "PIB per capita (USD)",
+       y = "Expectativa de vida ao nascer (anos)",
+       color = "País") +
+  theme_minimal() +
+  theme(legend.position = "none") +  # Remove a legenda de países para melhorar o gráfico
+  scale_x_continuous(labels = scales::comma) +  # Adiciona formatação para o eixo X
+  scale_y_continuous(labels = scales::comma) # Adiciona formatação para o eixo Y
+```
+
+## Gráfico série temporal
+
+O gráfico apresenta a série temporal do PIB per capita do Brasil ao longo dos anos. O eixo horizontal representa os anos, enquanto o eixo vertical indica o PIB per capita em dólares americanos (US\$). As barras verticais azuis mostram a evolução desse indicador ao longo do tempo. Observa-se um crescimento inicial do PIB per capita até meados da década de 2010, seguido por oscilações, até a maior alta no ano de 2023.
+
+```{r}
+#| label: graf2
+#| warning: false
+#| echo: false
+
+ggplot(dados, aes(x = year, y = NY.GDP.PCAP.CD)) +
+  geom_line(color = "blue", size = 1) +
+  labs(title = "Série Temporal do PIB per capita - Brasil",
+       x = "Ano",
+       y = "PIB per capita (US$)") +
+  theme_minimal()
+```
