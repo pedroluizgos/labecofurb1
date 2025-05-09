@@ -1,0 +1,62 @@
+---
+title: "Pedro Luiz"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(palmerpenguins)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+#| echo: false
+
+library(tidyverse)
+library(GetBCBData)
+
+my.id <- c(euro = 21619)
+
+
+df.bcb <- gbcbd_get_series(
+  id = my.id,
+  first.date = '2000-01-01',
+  last.date = Sys.Date(),
+  format.data = 'long',
+  use.memoise = TRUE,
+  cache.path = tempdir(),
+  do.parallel = FALSE
+)
+```
+
+## Gráfico Cotação Diária do Euro (Venda)
+
+O gráfico mostra a **cotação diária do euro (venda)** em relação ao real brasileiro desde 2000 até o presente (2025). A linha verde no gráfico representa a variação do valor do euro ao longo do tempo, e o eixo vertical (y) mostra o valor do euro em reais (R\$). O eixo horizontal (x) representa as datas.
+
+**Tendência geral**: A cotação do euro tem mostrado uma alta gradual ao longo dos anos, com alguns picos mais acentuados. Esses picos podem ser associados a eventos econômicos, políticos ou crises financeiras, como a crise financeira global de 2008 ou outras instabilidades econômicas.
+
+**Oscilações**: Como esperado para o mercado de câmbio, o gráfico exibe várias flutuações diárias, com variações de preço que podem ser explicadas por fatores como política monetária, mudanças nos mercados globais ou variações nas expectativas econômicas.
+
+**Picos e quedas**: Nos anos de 2008 e 2014, por exemplo, houve um aumento considerável no valor do euro frente ao real, possivelmente devido a crises econômicas globais e regionais. Já em outros períodos, como em 2016-2017, houve uma diminuição nas cotações.
+
+```{r}
+#| label: graf1
+#| warning: false
+#| echo: false
+
+p <- ggplot(df.bcb, aes(x = ref.date, y = value)) +
+  geom_line(color = "darkgreen") +
+  labs(title = 'Cotação Diária do Euro (Venda)',
+       subtitle = paste0(min(df.bcb$ref.date), ' a ', max(df.bcb$ref.date)),
+       x = '', y = 'R$ por euro') +
+  theme_light()
+
+print(p)
+```
+
+## 
