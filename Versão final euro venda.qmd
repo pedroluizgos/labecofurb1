@@ -1,0 +1,120 @@
+---
+title: "Pedro Luiz"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(GetBCBData)
+library(tidyverse) 
+library(ggplot2)
+library(gganimate)
+library(gifski)
+library(ragg)
+library(knitr)
+```
+
+```{r}
+#| label: carregar graf
+#| include: false
+
+my.id <- c(euro = 21619)
+
+df.bcb <- gbcbd_get_series(
+  id = my.id,
+  first.date = '2000-01-01',
+  last.date = Sys.Date(),
+  format.data = 'long',
+  use.memoise = TRUE,
+  cache.path = tempdir(),
+  do.parallel = FALSE
+)
+
+
+glimpse(df.bcb)
+
+
+```
+
+```{}
+```
+
+## Gráfico Cotação Diária do Euro (Venda)
+
+O gráfico mostra a **cotação diária do euro (venda)** em relação ao real brasileiro desde 2000 até o presente (2025). A linha verde no gráfico representa a variação do valor do euro ao longo do tempo, e o eixo vertical (y) mostra o valor do euro em reais (R\$). O eixo horizontal (x) representa as datas.
+
+**Tendência geral**: A cotação do euro tem mostrado uma alta gradual ao longo dos anos, com alguns picos mais acentuados. Esses picos podem ser associados a eventos econômicos, políticos ou crises financeiras, como a crise financeira global de 2008 ou outras instabilidades econômicas.
+
+**Oscilações**: Como esperado para o mercado de câmbio, o gráfico exibe várias flutuações diárias, com variações de preço que podem ser explicadas por fatores como política monetária, mudanças nos mercados globais ou variações nas expectativas econômicas.
+
+**Picos e quedas**: Nos anos de 2008 e 2014, por exemplo, houve um aumento considerável no valor do euro frente ao real, possivelmente devido a crises econômicas globais e regionais. Já em outros períodos, como em 2016-2017, houve uma diminuição nas cotações.
+
+```{r}
+#| label: graf1
+#| warning: false
+#| echo: false
+
+
+```
+
+```{r}
+#| label: grafico-animado
+#| warning: false
+#| echo: false
+#| fig-align: center
+
+# Criar gráfico com animação
+p <- ggplot(df.bcb, aes(x = ref.date, y = value)) +
+  geom_line(color = "darkgreen") +
+  labs(title = 'Cotação Diária do Euro (Venda)',
+       subtitle = paste0(min(df.bcb$ref.date), ' a ', max(df.bcb$ref.date)),
+       x = '', y = 'R$ por euro') +
+  theme_light() +
+  transition_reveal(ref.date) +  # Animação que revela os pontos ao longo do tempo
+  ease_aes('linear')  # Define o estilo da animação
+
+# Criar pasta "figures" se não existir
+dir.create("figures", showWarnings = FALSE)
+
+# Caminho relativo para salvar o GIF
+gif_path <- "figures/grafico_animado_euro.gif"
+
+# Gerar e salvar a animação
+anim <- animate(
+  p,
+  width = 8, height = 6,             # Dimensões em polegadas
+  units = "in",
+  res = 100,                         # Resolução (800x600 px)
+  fps = 20, duration = 10,           # FPS e duração
+  renderer = gifski_renderer(),      # Usar gifski para gerar o GIF
+  device = "ragg_png"
+)
+
+# Salvar o GIF na pasta figures
+anim_save(gif_path, animation = anim)
+
+# Incluir GIF no HTML final
+knitr::include_graphics(gif_path)
+
+```
+
+### Importância do Euro (venda)
+
+-   **Indicador Econômico**: A cotação do euro (venda) é um dos principais indicadores de como a economia brasileira está interagindo com a economia europeia. Flutuações nesta taxa refletem, entre outros fatores, o desempenho da economia da zona do euro, a política monetária do Banco Central Europeu (BCE), e o risco percebido por investidores em relação ao Brasil e à Europa.
+
+-   **Impactos no Comércio Internacional**: A cotação do euro afeta diretamente o custo de bens e serviços importados da Europa, como máquinas, eletrônicos, veículos e até produtos alimentícios. Portanto, uma alta na cotação do euro pode aumentar o custo desses produtos no Brasil, o que impacta a inflação.
+
+<!-- -->
+
+-    **Turismo e Viagens**: Para turistas brasileiros que viajam para a Europa, a variação do euro (venda) tem impacto direto no poder de compra. Uma cotação mais alta significa que será necessário mais reais para fazer uma viagem internacional.
+
+<!-- -->
+
+-    **Mercados Financeiros**: Investidores e traders que operam no mercado de câmbio utilizam a cotação do euro (venda) para fazer operações de hedge, especulação ou arbitragem. A variação dessa taxa de câmbio influencia as decisões de investimento, especialmente para empresas que têm exposições financeiras com a Europa.
+
+<!-- -->
+
+-    **Política Monetária e Fiscal**: O Banco Central do Brasil acompanha de perto a evolução do euro, pois ele pode impactar a política cambial e até as reservas internacionais do Brasil. Se o real se desvalorizar em relação ao euro, isso pode exigir ajustes em políticas econômicas para controlar a inflação ou influenciar a taxa de juros.
